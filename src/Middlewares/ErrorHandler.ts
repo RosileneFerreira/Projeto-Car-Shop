@@ -1,4 +1,5 @@
 import { NextFunction, Request, Response } from 'express';
+import HttpException from '../Utils/HttpException';
 
 class ErrorHandler {
   public static handle(
@@ -7,6 +8,9 @@ class ErrorHandler {
     res: Response,
     next: NextFunction,
   ) {
+    if (error instanceof HttpException) {
+      return res.status(error.status).json({ message: error.message });
+    }
     res.status(500).json({ message: error.message });
     next();
   }

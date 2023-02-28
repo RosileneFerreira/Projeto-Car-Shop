@@ -99,5 +99,48 @@ describe('Deveria cadastrar um carro', function () {
     }
   });
 
+  it('Deveria atualizar um carro com sucesso', async function () {
+    // Arrange
+    const carInput: ICar = {
+      model: 'C4',
+      year: 2011,
+      color: 'Red',
+      status: true,
+      buyValue: 20.000,
+      doorsQty: 4,
+      seatsQty: 5,
+    };
+    const carOutput: Car = new Car(carInput);
+  
+    sinon.stub(Model, 'findByIdAndUpdate').resolves(carOutput);
+
+    // Act
+    const service = new CarService();
+    const result = await service.updateCar('63fe0f83f03f8cf263807e76', carInput);
+
+    // Assert
+    expect(result).to.be.deep.equal(carOutput);
+
+    // Lançar erro quando um carro não existe para atualizar
+
+    sinon.stub(Model, 'findOne').onCall(0).resolves(null);
+
+    try {
+      const carService = new CarService();
+      await carService.updateCar('63fcc7ccb28dd61125202c7e', carInput);        
+    } catch (error) {
+      expect((error as Error).message).to.equal('Car not found');
+    }
+
+    // Lançar erro caso o id para atualização seja inválido
+
+    try {
+      const carService = new CarService();
+      await carService.updateCar('1', carInput);
+    } catch (erro) {
+      expect((erro as Error).message).to.be.deep.equal('Invalid mongo id');
+    }
+  });
+
   afterEach(function () { sinon.restore(); });
 });

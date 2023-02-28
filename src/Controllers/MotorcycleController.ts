@@ -27,8 +27,28 @@ class MotorcycleController {
     };
 
     try {
-      const newmotorcycle = await this.service.createMotorcycle(motorcycle);
-      return this.res.status(201).json(newmotorcycle);
+      const newMotorcycle = await this.service.createMotorcycle(motorcycle);
+      return this.res.status(201).json(newMotorcycle);
+    } catch (error) {
+      this.next(error);
+    }
+  }
+
+  public async getAllMotorcycles() {
+    try {
+      const motorcycles = await this.service.getAll();
+      return this.res.status(200).json(motorcycles);
+    } catch (error) {
+      this.next(error);
+    }
+  }
+
+  public async getMotorcycleById() {
+    const { id } = this.req.params;
+
+    try {
+      const motorcycle = await this.service.getById(id);
+      return this.res.status(200).json(motorcycle);
     } catch (error) {
       this.next(error);
     }
